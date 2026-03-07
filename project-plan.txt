@@ -1,0 +1,2 @@
+- Create three main pages: `index.html` (Homepage), `new-post.html` (Create Post), and `post.html` (View/Edit Post).
+- Use JavaScript to handle CRUD operations.
