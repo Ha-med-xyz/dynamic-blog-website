@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>New Post</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<header>
+  <nav>
+    <a href="index.html">Home</a>
+  </nav>
+</header>
+
+<body>
+  <form id="post-form">
+    <div>
+      <label for="title">Title:</label>
+      <input type="text" id="title" placeholder="Post title">
+    </div>
+    <div>
+      <label for="content">Content:</label>
+      <textarea id="content" rows="4" placeholder="Write content here"></textarea>
+    </div>
+    <div>
+      <label for="image">Image:</label>
+      <input type="file" id="image" accept="image/*">
+    </div>
+    <button type="submit">Publish Post</button>
+  </form>
+</body>
+
+<script>
+    function savePost(event) {
+      // Prevents page refresh
+      event.preventDefault();
+
+      // Get fields by id
+      const title = document.getElementById("title").value.trim();
+      const content = document.getElementById("content").value.trim();
+      const imageFile = document.getElementById("image").files[0];
+
+      // Validate
+      if (!title) {
+        alert("Title is required.");
+        return;
+      }
+      if (!content) {
+        alert("Content is required.");
+        return;
+      }
+
+      // Read posts and push new post
+      // Updated array is saved
+      function storePost(imageData = null) {
+        const postsContent = localStorage.getItem("posts");
+        const posts = postsContent ? JSON.parse(postsContent) : [];
+
+        posts.push({ title, content, image: imageData });
+        localStorage.setItem("posts", JSON.stringify(posts));
+
+        // After saving new post, user is sent to homepage
+        window.location.href = "index.html";
+      }
+
+      // Convert submitted image to base64
+      if (imageFile) {
+        const reader = new FileReader();
+        reader.onload = (e) => storePost(e.target.result);
+        reader.readAsDataURL(imageFile);
+      } else {
+        storePost();
+      }
+    }
+
+    document.getElementById("post-form").addEventListener("submit", savePost);
+  </script>
+</html>
