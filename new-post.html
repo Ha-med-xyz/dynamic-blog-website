@@ -32,4 +32,34 @@
   </form>
 </body>
 
+<script>
+    function savePost(event) {
+      event.preventDefault();
+
+      const title = document.getElementById("title").value.trim();
+      const content = document.getElementById("content").value.trim();
+      const imageFile = document.getElementById("image").files[0];
+
+      function storePost(imageData = null) {
+        const postsContent = localStorage.getItem("posts");
+        const posts = postsContent ? JSON.parse(postsContent) : [];
+
+        posts.push({ title, content, image: imageData });
+        localStorage.setItem("posts", JSON.stringify(posts));
+
+        window.location.href = "index.html";
+      }
+
+      // If an image was provided, convert it to base64 first
+      if (imageFile) {
+        const reader = new FileReader();
+        reader.onload = (e) => storePost(e.target.result);
+        reader.readAsDataURL(imageFile);
+      } else {
+        storePost();
+      }
+    }
+
+    document.getElementById("post-form").addEventListener("submit", savePost);
+  </script>
 </html>
