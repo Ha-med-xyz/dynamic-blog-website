@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+
+    <header>
+        <nav>
+            <a href="index.html">Home</a>
+        </nav>
+    </header>
+
+    <div id="view-mode">
+        <img id="post-image" src="" alt="" style="display:none;" />
+        <h1 id="post-title"></h1>
+        <p id="post-content"></p>
+        <button id="edit-btn" onclick="enableEditMode()">Edit Post</button>
+    </div>
+
+    <!-- EDIT mode -->
+    <div id="edit-mode" style="display:none;">
+        <div>
+            <input type="text" id="edit-title" placeholder="Post title" />
+        </div>
+        <div>
+            <textarea id="edit-content" placeholder="Post content"></textarea>
+        </div>
+        <div class="edit-actions">
+            <button id="save-btn" onclick="saveChanges()">Save Changes</button>
+            <button id="cancel-btn" onclick="cancelEdit()">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        // Read the post ID from the URL (?id=2)
+        const params = new URLSearchParams(window.location.search);
+        const postId = parseInt(params.get("id"));
+
+        // Load posts array from localStorage
+        const posts = JSON.parse(localStorage.getItem("posts")) || [];
+        const post = posts[postId];
+
+        // Redirect home if post doesn't exist
+        if (!post) {
+            alert("Post not found.");
+            window.location.href = "index.html";
+        }
+
+        // Populate the VIEW mode elements
+        function renderPost() {
+            document.title = post.title;
+            document.getElementById("post-title").textContent = post.title;
+            document.getElementById("post-content").textContent = post.content;
+
+            const img = document.getElementById("post-image");
+            if (post.image) {
+                img.src = post.image;
+                img.alt = post.title;
+                img.style.display = "block";
+            } else {
+                img.style.display = "none";
+            }
+        }
+
+        renderPost();
+
+        // Switch to EDIT mode
+        function enableEditMode() {
+            // Pre-fill edit fields with current values
+            document.getElementById("edit-title").value = post.title;
+            document.getElementById("edit-content").value = post.content;
+
+            document.getElementById("view-mode").style.display = "none";
+            document.getElementById("edit-mode").style.display = "block";
+        }
+
+        // Cancel edit — go back to VIEW mode with no changes
+        function cancelEdit() {
+            document.getElementById("view-mode").style.display = "block";
+            document.getElementById("edit-mode").style.display = "none";
+        }
+
+        // Validate, save changes, and return to VIEW mode
+        function saveChanges() {
+            const newTitle = document.getElementById("edit-title").value.trim();
+            const newContent = document.getElementById("edit-content").value.trim();
+
+            // Validation
+            if (!newTitle) {
+                alert("Title cannot be empty.");
+                return;
+            }
+            if (!newContent) {
+                alert("Content cannot be empty.");
+                return;
+            }
+
+            // Update the post object in place (image is unchanged)
+            post.title = newTitle;
+            post.content = newContent;
+
+            // Write the updated array back to localStorage
+            posts[postId] = post;
+            localStorage.setItem("posts", JSON.stringify(posts));
+
+            // Refresh the view and return to VIEW mode
+            renderPost();
+            cancelEdit();
+        }
+    </script>
+</body>
+
+</html>
