@@ -34,12 +34,26 @@
 
 <script>
     function savePost(event) {
+      // Prevents page refresh
       event.preventDefault();
 
+      // Get fields by id
       const title = document.getElementById("title").value.trim();
       const content = document.getElementById("content").value.trim();
       const imageFile = document.getElementById("image").files[0];
 
+      // Validate
+      if (!title) {
+        alert("Title is required.");
+        return;
+      }
+      if (!content) {
+        alert("Content is required.");
+        return;
+      }
+
+      // Read posts and push new post
+      // Updated array is saved
       function storePost(imageData = null) {
         const postsContent = localStorage.getItem("posts");
         const posts = postsContent ? JSON.parse(postsContent) : [];
@@ -47,10 +61,11 @@
         posts.push({ title, content, image: imageData });
         localStorage.setItem("posts", JSON.stringify(posts));
 
+        // After saving new post, user is sent to homepage
         window.location.href = "index.html";
       }
 
-      // If an image was provided, convert it to base64 first
+      // Convert submitted image to base64
       if (imageFile) {
         const reader = new FileReader();
         reader.onload = (e) => storePost(e.target.result);
